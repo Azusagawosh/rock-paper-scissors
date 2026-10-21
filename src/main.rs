@@ -89,6 +89,7 @@ fn computer_choice() -> i32 {
     rng.gen_range(0..5)
 }
 */
+/*
 use rand::Rng;
 use std::io;
 
@@ -149,5 +150,88 @@ fn main() {
         println!("{}\n-----------------------------", result_text);
     }
 }
+*/
+
+use rand::Rng;
+use std::io;
 
 
+struct Game {
+    items: Vec<&'static str>,
+    matrix: Vec<Vec<i32>>,
+}
+
+
+impl Game {
+    
+    fn new() -> Self {
+        let items = vec!["stone", "lizard", "spock", "scissors", "paper"];
+        
+        let matrix = vec![
+            vec![ 0,  1, -1,  1, -1 ], // Камень
+            vec![-1,  0,  1, -1,  1 ], // Ящерица
+            vec![ 1, -1,  0,  1, -1 ], // Спок
+            vec![-1,  1, -1,  0,  1 ], // Ножницы
+            vec![ 1, -1,  1, -1,  0 ], // Бумага
+        ];
+
+        Game { items, matrix }
+    }
+
+    
+    fn get_computer_choice(&self) -> usize {
+        let mut rng = rand::thread_rng();
+        rng.gen_range(0..self.items.len())
+    }
+
+    
+    fn get_result(&self, player: usize, computer: usize) -> &'static str {
+        match self.matrix[player][computer] {
+             1 => "Ты победил!",
+             0 => "Ничья! Вы оба выбрали одинаковое.",
+            -1 => "Компьютер победил!",
+             _ => "Ошибка",
+        }
+    }
+
+    
+    fn run(&self) {
+        println!("добро пожаловать в игру!");
+        
+        loop {
+            println!("Введи свой выбор ({:?}):", self.items);
+
+            let mut player_input = String::new();
+            io::stdin().read_line(&mut player_input).expect("Ошибка чтения");
+            let player_input = player_input.trim().to_lowercase();
+
+            if player_input == "exit" {
+                println!("Спасибо за игру! До встречи!");
+                break; 
+            }
+
+            
+            let player_idx = match self.items.iter().position(|&x| x == player_input) {
+                Some(index) => index,
+                None => {
+                    println!("Ошибка: неверное слово.\n");
+                    continue; 
+                }
+            };
+
+            let computer_idx = self.get_computer_choice();
+
+            println!("Ты выбрал: {}", self.items[player_idx]);
+            println!("Компьютер выбрал: {}", self.items[computer_idx]);
+            
+            let result_text = self.get_result(player_idx, computer_idx);
+            println!("{}\n-----------------------------", result_text);
+        }
+    }
+}
+
+
+fn main() {
+    let game = Game::new(); // Создаем игру
+    game.run();             // Запускаем её
+}
