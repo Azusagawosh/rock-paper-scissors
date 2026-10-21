@@ -232,6 +232,6 @@ impl Game {
 
 
 fn main() {
-    let game = Game::new(); // Создаем игру
-    game.run();             // Запускаем её
+    let game = Game::new(); 
+    game.run();             
 }
